@@ -6,3 +6,4 @@ Not finished yet (current stage: connect to the server and get the job,  thread 
 ## TO DO
 * Mining algotithms implementation
 * cmake build
+* unit tests
