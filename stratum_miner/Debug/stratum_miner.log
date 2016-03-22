@@ -1,0 +1,13 @@
+﻿Build started 20.01.2016 14:37:32.
+     1>Project "C:\myprojects\embedded_miner\sources\stratum_miner\stratum_miner\stratum_miner.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt miner.cpp
+         miner.cpp
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"C:\myprojects\embedded_miner\sources\stratum_miner\Debug\stratum_miner.lib" /LIBPATH:C:\myprojects\libs\boost_1_56_0\stage\lib /NOLOGO Debug\miner.obj
+         stratum_miner.vcxproj -> C:\myprojects\embedded_miner\sources\stratum_miner\Debug\stratum_miner.lib
+     1>Done Building Project "C:\myprojects\embedded_miner\sources\stratum_miner\stratum_miner\stratum_miner.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:07.40

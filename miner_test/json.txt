@@ -1,0 +1,2 @@
+{"id":1,"jsonrpc":"2.0","error":null,"result":{"id":"454102443181909","job":{"blob":"0100b98d9bb7055dd1c53751083f15361a4c1c0ec85e1901b66511bd5485914df6d8a0dae64ae800000000231d2f063a6e5087befa185a14eb78dd4c89b5d8c409e239c09a01b7d6ea32d101","job_id":"816427841829136","target":"169f0200"},"status":"OK"}}
+

@@ -88,7 +88,7 @@ namespace stratum
 			std::ostringstream sout;
 			sout << &response_;
 			job_parser job(sout.str());
-			pool_.set_job(job.blob(), job.difficulty(),
+			pool_.set_job(job.blob(), job.target(),
 				boost::bind(&stratum_client::handle_job_succeeded, this, job.id(), _1));
 
 			// Start reading remaining data until EOF.

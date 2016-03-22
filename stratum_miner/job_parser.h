@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <stdint.h>
 #include "common.h"
 
 namespace stratum
@@ -21,11 +22,11 @@ namespace stratum
 
 		const binary& blob() const;
 		const std::string& id() const;
-		double difficulty() const;
+		uint32_t target() const;
 	private:
 		binary blob_;
 		std::string job_id_;
-		double difficulty_;
+		uint32_t target_;
 	};
 
 }

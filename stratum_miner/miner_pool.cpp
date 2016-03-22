@@ -17,26 +17,29 @@ namespace stratum
 		stop();
 	}
 
-	void miner_pool::set_job(const binary& blob, double difficulty, job_callback cb)
+	void miner_pool::set_job(const binary& blob, uint32_t target, job_callback cb)
 	{
 		stop();
 		for (unsigned i = 0; i < thread_num_; i++)
 			io_service_.post(boost::bind(&miner_pool::calc, blob,
-			difficulty, cb, std::ref(stop_flag_)));
+			target, 
+			std::numeric_limits<uint32_t>::max() / thread_num_ * i, 
+			cb, std::ref(stop_flag_)));
 		start();
 	}
 
-	void miner_pool::calc(const binary& blob, double difficulty, job_callback cb, 
+	void miner_pool::calc(const binary& blob, uint32_t target, 
+		uint32_t start_nonce, job_callback cb,
 		std::atomic_flag& stop)
 	{
 		std::cout << "Start calc..." << std::endl;
 		std::unique_ptr<mining_algorithm> alg =
 			mining_algorithm::factory(mining_algorithm::CRYPTONIGHT, blob,
-			difficulty);
+			target, start_nonce);
 		while (stop.test_and_set())
 		{
-			if (alg->process_next_nounce())
-				cb(alg->nounce());
+			if (alg->process_next_nonce())
+				cb(alg->nonce());
 		}
 		stop.clear();
 	}

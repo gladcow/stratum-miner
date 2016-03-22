@@ -23,8 +23,7 @@ namespace stratum
 
 		job_id_ = params->get<std::string>("job_id");
 		blob_ = hex_string(params->get<std::string>("blob"));
-		uint32_t target = hex_string(params->get<std::string>("target"));
-		difficulty_ = (((double)0xffffffff) / target);
+		target_ = hex_string(params->get<std::string>("target"));
 	}
 
 	const binary& job_parser::blob() const
@@ -37,9 +36,9 @@ namespace stratum
 		return job_id_;
 	}
 
-	double job_parser::difficulty() const
+	uint32_t job_parser::target() const
 	{
-		return difficulty_;
+		return target_;
 	}
 
 }

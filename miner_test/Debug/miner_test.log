@@ -1,0 +1,20 @@
+﻿Build started 20.01.2016 14:37:32.
+     1>Project "C:\myprojects\embedded_miner\sources\stratum_miner\miner_test\miner_test.vcxproj" on node 3 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\myprojects\libs\boost_1_56_0 /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt miner_test.cpp
+         miner_test.cpp
+         Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+         - add -D_WIN32_WINNT=0x0501 to the compiler command line; or
+         - add _WIN32_WINNT=0x0501 to your project's Preprocessor Definitions.
+         Assuming _WIN32_WINNT=0x0501 (i.e. Windows XP target).
+     1>c:\myprojects\embedded_miner\sources\stratum_miner\miner_test\miner_test.cpp(58): warning C4018: '<' : signed/unsigned mismatch
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\myprojects\embedded_miner\sources\stratum_miner\Debug\miner_test.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\myprojects\libs\boost_1_56_0\stage\lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\myprojects\embedded_miner\sources\stratum_miner\Debug\miner_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\myprojects\embedded_miner\sources\stratum_miner\Debug\miner_test.lib" /MACHINE:X86 Debug\miner_test.obj
+     1>miner_test.obj : error LNK2019: unresolved external symbol "class boost::system::error_category const & __cdecl boost::system::system_category(void)" (?system_category@system@boost@@YAABVerror_category@12@XZ) referenced in function "public: __thiscall boost::system::error_code::error_code(void)" (??0error_code@system@boost@@QAE@XZ)
+     1>miner_test.obj : error LNK2019: unresolved external symbol "class boost::system::error_category const & __cdecl boost::system::generic_category(void)" (?generic_category@system@boost@@YAABVerror_category@12@XZ) referenced in function "void __cdecl boost::system::`dynamic initializer for 'errno_ecat''(void)" (??__Eerrno_ecat@system@boost@@YAXXZ)
+     1>C:\myprojects\embedded_miner\sources\stratum_miner\Debug\miner_test.exe : fatal error LNK1120: 2 unresolved externals
+     1>Done Building Project "C:\myprojects\embedded_miner\sources\stratum_miner\miner_test\miner_test.vcxproj" (Rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:10.55

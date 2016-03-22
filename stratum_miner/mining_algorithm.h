@@ -14,17 +14,18 @@ namespace stratum
 		};
 
 		static std::unique_ptr<mining_algorithm> factory(Algorithm a,
-			const binary& blob, double difficulty);
+			const binary& blob, uint32_t target, uint32_t start_nonce);
 
-		mining_algorithm(const binary& blob, double difficulty);
+		mining_algorithm(const binary& blob, uint32_t target,
+			uint32_t start_nonce);
 
-		virtual bool process_next_nounce() = 0;
-		virtual unsigned nounce() const = 0;
+		virtual bool process_next_nonce() = 0;
+		virtual uint32_t nonce() const = 0;
 
 	protected:
 		binary blob_;
-		double difficulty_;
-		unsigned nounce_;
+		uint32_t target_;
+		uint32_t nonce_;
 	};
 
 }

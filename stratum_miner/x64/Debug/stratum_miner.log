@@ -1,0 +1,34 @@
+﻿Build started 14.03.2016 23:07:12.
+     1>Project "C:\myprojects\embedded_miner\sources\stratum_miner\stratum_miner\stratum_miner.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\myprojects\libs\boost_1_56_0 /ZI /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt hex_string.cpp job_parser.cpp miner_pool.cpp stratum_client.cpp
+     1>cl : Command line warning D9038: /ZI is not supported on this platform; enabling /Zi instead
+     1>cl : Command line warning D9007: '/Gm' requires '/Zi'; option ignored
+         hex_string.cpp
+     1>hex_string.cpp(20): warning C4244: 'initializing' : conversion from 'long' to 'unsigned char', possible loss of data
+         job_parser.cpp
+         miner_pool.cpp
+         Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+         - add -D_WIN32_WINNT=0x0501 to the compiler command line; or
+         - add _WIN32_WINNT=0x0501 to your project's Preprocessor Definitions.
+         Assuming _WIN32_WINNT=0x0501 (i.e. Windows XP target).
+     1>miner_pool.cpp(32): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
+         stratum_client.cpp
+         Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+         - add -D_WIN32_WINNT=0x0501 to the compiler command line; or
+         - add _WIN32_WINNT=0x0501 to your project's Preprocessor Definitions.
+         Assuming _WIN32_WINNT=0x0501 (i.e. Windows XP target).
+     1>C:\myprojects\libs\boost_1_56_0\boost/asio/detail/impl/socket_ops.ipp(1968): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
+     1>C:\myprojects\libs\boost_1_56_0\boost/asio/detail/impl/socket_ops.ipp(2172): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\myprojects\embedded_miner\sources\stratum_miner\x64\Debug\stratum_miner.lib" /LIBPATH:C:\myprojects\libs\boost_1_56_0\stage\lib /NOLOGO /MACHINE:X64 x64\Debug\hex_string.obj
+         x64\Debug\job_parser.obj
+         x64\Debug\miner_pool.obj
+         x64\Debug\stratum_client.obj
+         stratum_miner.vcxproj -> C:\myprojects\embedded_miner\sources\stratum_miner\x64\Debug\stratum_miner.lib
+     1>Done Building Project "C:\myprojects\embedded_miner\sources\stratum_miner\stratum_miner\stratum_miner.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:17.87

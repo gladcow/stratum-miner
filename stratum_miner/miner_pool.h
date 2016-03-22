@@ -16,10 +16,10 @@ namespace stratum
 		miner_pool(unsigned thread_num = std::thread::hardware_concurrency());
 		~miner_pool();
 
-		void set_job(const binary& blob, double difficulty, job_callback cb);
+		void set_job(const binary& blob, uint32_t target, job_callback cb);
 	private:
-		static void calc(const binary& blob, double difficulty, 
-			job_callback cb, std::atomic_flag& stop);
+		static void calc(const binary& blob, uint32_t target, 
+			uint32_t start_nonce, job_callback cb, std::atomic_flag& stop);
 
 		void stop();
 		void start();
