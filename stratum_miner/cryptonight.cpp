@@ -29,4 +29,11 @@ namespace stratum
 		return nonce_;
 	}
 
+	binary cryptonight::binary_res() const
+	{
+		const unsigned char* start = 
+			reinterpret_cast<const unsigned char*>(&hash_[0]);
+		return binary(start, start + hash_.size() * sizeof(uint32_t));
+	}
+
 }

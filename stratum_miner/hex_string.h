@@ -11,6 +11,7 @@ namespace stratum
 	public:
 		hex_string(const std::string& hex_encoded);
 		hex_string(const binary& bin_data);
+		hex_string(uint32_t num_data);
 
 		operator std::string && ();
 		operator binary && ();

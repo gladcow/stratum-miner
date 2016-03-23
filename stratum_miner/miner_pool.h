@@ -11,7 +11,7 @@ namespace stratum
 	class miner_pool
 	{
 	public:
-		typedef boost::function<void(uint32_t)> job_callback;
+		typedef boost::function<void(uint32_t, binary)> job_callback;
 
 		miner_pool(unsigned thread_num = std::thread::hardware_concurrency());
 		~miner_pool();

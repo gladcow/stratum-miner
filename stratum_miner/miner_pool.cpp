@@ -32,14 +32,14 @@ namespace stratum
 		uint32_t start_nonce, job_callback cb,
 		std::atomic_flag& stop)
 	{
-		std::cout << "Start calc..." << std::endl;
+		//std::cout << "Start calc..." << std::endl;
 		std::unique_ptr<mining_algorithm> alg =
 			mining_algorithm::factory(mining_algorithm::CRYPTONIGHT, blob,
 			target, start_nonce);
 		while (stop.test_and_set())
 		{
 			if (alg->process_next_nonce())
-				cb(alg->nonce());
+				cb(alg->nonce(), alg->binary_res());
 		}
 		stop.clear();
 	}

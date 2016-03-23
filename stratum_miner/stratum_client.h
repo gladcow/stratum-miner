@@ -16,9 +16,10 @@ namespace stratum
 		void handle_resolve(const boost::system::error_code& err,
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 		void handle_connect(const boost::system::error_code& err);
-		void handle_login(const boost::system::error_code& err);
-		void handle_new_job(const boost::system::error_code& err);
-		void handle_job_succeeded(const std::string& job_id, int nounce);
+		void handle_server_msg(const boost::system::error_code& err);
+		void handle_job_succeeded(const std::string& job_id, uint32_t nonce,
+			const binary& hash);
+		void handle_write_completed(const boost::system::error_code& err);
 
 		boost::asio::io_service io_service_;
 		boost::asio::io_service::work working_;
@@ -28,6 +29,7 @@ namespace stratum
 		boost::asio::streambuf response_;
 		std::string login_;
 		std::string pwd_;
+		std::string rpc_id_;
 		miner_pool pool_;
 	};
 

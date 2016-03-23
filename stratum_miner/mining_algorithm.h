@@ -21,7 +21,7 @@ namespace stratum
 
 		virtual bool process_next_nonce() = 0;
 		virtual uint32_t nonce() const = 0;
-
+		virtual binary binary_res() const = 0;
 	protected:
 		binary blob_;
 		uint32_t target_;

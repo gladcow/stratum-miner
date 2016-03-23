@@ -15,6 +15,7 @@ namespace stratum
 
 		virtual bool process_next_nonce() override;
 		virtual uint32_t nonce() const override;
+		virtual binary binary_res() const override;
 	private:
 		std::array<uint32_t, 8> hash_;
 	};

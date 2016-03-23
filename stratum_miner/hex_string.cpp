@@ -26,7 +26,17 @@ namespace stratum
 		decoded_(bin_data)
 	{
 		stringstream ss;
-		for (auto b : bin_data)
+		for (auto b : decoded_)
+			ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(b);
+		encoded_ = ss.str();
+	}
+
+	hex_string::hex_string(uint32_t num_data) :
+		decoded_(((unsigned char*)&num_data), 
+		((unsigned char*)&num_data) + sizeof(uint32_t))
+	{
+		stringstream ss;
+		for (auto b : decoded_)
 			ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(b);
 		encoded_ = ss.str();
 	}

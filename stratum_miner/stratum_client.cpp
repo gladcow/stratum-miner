@@ -1,5 +1,6 @@
 #include "stratum_client.h"
-#include "job_parser.h"
+#include "reply_parser.h"
+#include "hex_string.h"
 #include <iostream>
 #include <future>
 #include <boost/bind.hpp>
@@ -57,7 +58,7 @@ namespace stratum
 			}
 
 			boost::asio::async_write(socket_, request_,
-				boost::bind(&stratum_client::handle_login, this,
+				boost::bind(&stratum_client::handle_write_completed, this,
 				boost::asio::placeholders::error));
 		}
 		else
@@ -66,13 +67,33 @@ namespace stratum
 		}
 	}
 
+	void stratum_client::handle_job_succeeded(const std::string& job_id, 
+		uint32_t nonce, const binary& hash)
+	{
+		std::cout << "job [" << job_id << "] succeeded, " << 
+			nonce << std::endl;
+		{
+			std::ostringstream oss;
+			oss << "{\"method\": \"submit\", \"params\": "
+				"{\"id\": \"" << rpc_id_ << "\", \"job_id\": \"" << job_id <<
+				"\", \"nonce\": \"" << std::string(hex_string(nonce)) <<
+				"\", \"result\": \"" << std::string(hex_string(hash)) <<
+				"\"}, \"id\":1}\n";
+			std::ostream request_stream(&request_);
+			request_stream << oss.str();
+		}
 
-	void stratum_client::handle_login(const boost::system::error_code& err)
+		boost::asio::async_write(socket_, request_,
+			boost::bind(&stratum_client::handle_write_completed, this,
+			boost::asio::placeholders::error));
+	}
+
+	void stratum_client::handle_write_completed(const boost::system::error_code& err)
 	{
 		if (!err)
 		{
 			boost::asio::async_read_until(socket_, response_, "\n",
-				boost::bind(&stratum_client::handle_new_job, this,
+				boost::bind(&stratum_client::handle_server_msg, this,
 				boost::asio::placeholders::error));
 		}
 		else
@@ -81,19 +102,42 @@ namespace stratum
 		}
 	}
 
-	void stratum_client::handle_new_job(const boost::system::error_code& err)
+	void stratum_client::handle_server_msg(const boost::system::error_code& err)
 	{
 		if (!err)
 		{
 			std::ostringstream sout;
 			sout << &response_;
-			job_parser job(sout.str());
-			pool_.set_job(job.blob(), job.target(),
-				boost::bind(&stratum_client::handle_job_succeeded, this, job.id(), _1));
+			reply_parser job(sout.str());
+			if (job.type() == reply_parser::LoginReply)
+			{
+				if (!job.status())
+				{
+					std::cout << "Login failed" << std::endl;
+					return;
+				}
+				std::cout << "Login succeeded" << std::endl;
+				rpc_id_ = job.rpc_id();
+			}
+			if ((job.type() == reply_parser::LoginReply) ||
+				(job.type() == reply_parser::NewJob))
+			{
+				std::cout << "New job detected" << std::endl;
+				pool_.set_job(job.blob(), job.target(),
+					boost::bind(&stratum_client::handle_job_succeeded, 
+					this, job.job_id(), _1, _2));
+			}
+			if (job.type() == reply_parser::SubmitReply)
+			{
+				if (job.status())
+					std::cout << "Submit succeeded" << std::endl;
+				else
+					std::cout << "Submit failed" << std::endl;
+			}
 
-			// Start reading remaining data until EOF.
+			// Start reading data again.
 			boost::asio::async_read_until(socket_, response_, "\n",
-				boost::bind(&stratum_client::handle_new_job, this,
+				boost::bind(&stratum_client::handle_server_msg, this,
 				boost::asio::placeholders::error));
 		}
 		else
@@ -102,11 +146,5 @@ namespace stratum
 		}
 	}
 
-	void stratum_client::handle_job_succeeded(const std::string& job_id, 
-		int nounce)
-	{
-		std::cout << "job [" << job_id << "] succeeded, " << 
-			nounce << std::endl;
-	}
 
 }
