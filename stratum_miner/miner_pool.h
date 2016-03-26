@@ -5,6 +5,7 @@
 #include <thread>
 #include <atomic>
 #include "common.h"
+#include "hash_counter.h"
 
 namespace stratum
 {
@@ -17,9 +18,12 @@ namespace stratum
 		~miner_pool();
 
 		void set_job(const binary& blob, uint32_t target, job_callback cb);
+
+		double hash_per_second() const;
 	private:
 		static void calc(const binary& blob, uint32_t target, 
-			uint32_t start_nonce, job_callback cb, std::atomic_flag& stop);
+			uint32_t start_nonce, job_callback cb, std::atomic_flag& stop, 
+			hash_counter& hashes);
 
 		void stop();
 		void start();
@@ -29,5 +33,6 @@ namespace stratum
 		std::vector<std::thread> pool_;
 		unsigned thread_num_;
 		std::atomic_flag stop_flag_;
+		hash_counter hashes_;
 	};
 }

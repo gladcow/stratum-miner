@@ -126,6 +126,8 @@ namespace stratum
 				pool_.set_job(job.blob(), job.target(),
 					boost::bind(&stratum_client::handle_job_succeeded, 
 					this, job.job_id(), _1, _2));
+				std::cout << pool_.hash_per_second() <<
+					" hashes per second" << std::endl;
 			}
 			if (job.type() == reply_parser::SubmitReply)
 			{
