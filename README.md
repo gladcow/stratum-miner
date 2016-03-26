@@ -1,7 +1,7 @@
 # stratum-miner
 Crossplatform C++ (boost.asio based) stratum client implementation
 
-Not finished yet (current stage: connect to the server and get the job,  thread pool is ready to process jobs)
+Not finished yet (current stage: cryptonight is fully working,  but not optimized)
 
 ## TO DO
 * Mining algotithms implementation
