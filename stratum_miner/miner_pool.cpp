@@ -1,6 +1,5 @@
 #include "miner_pool.h"
 #include "mining_algorithm.h"
-#include <iostream>
 #include <boost/bind.hpp>
 
 namespace stratum
@@ -32,7 +31,6 @@ namespace stratum
 		uint32_t start_nonce, job_callback cb,
 		std::atomic_flag& stop)
 	{
-		//std::cout << "Start calc..." << std::endl;
 		std::unique_ptr<mining_algorithm> alg =
 			mining_algorithm::factory(mining_algorithm::CRYPTONIGHT, blob,
 			target, start_nonce);
