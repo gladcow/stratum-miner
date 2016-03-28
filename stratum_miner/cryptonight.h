@@ -4,6 +4,7 @@
 #include <array>
 #include <memory>
 
+struct cryptonight_ctx;
 
 namespace stratum
 {
@@ -18,6 +19,8 @@ namespace stratum
 		virtual binary binary_res() const override;
 	private:
 		std::array<uint32_t, 8> hash_;
+		std::unique_ptr<struct cryptonight_ctx, 
+			void(*)(struct cryptonight_ctx*)> ctx_;
 	};
 }
 

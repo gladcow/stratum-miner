@@ -201,3 +201,12 @@ void cryptonight_hash(void* output, const void* input, size_t len) {
 	free(ctx);
 }
 
+struct cryptonight_ctx* cryptonight_alloc_ctx()
+{
+	return (struct cryptonight_ctx*)malloc(sizeof(struct cryptonight_ctx));
+}
+
+void cryptonight_free_ctx(struct cryptonight_ctx* ctx)
+{
+	free(ctx);
+}
