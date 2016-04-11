@@ -45,6 +45,9 @@
     <ClCompile Include="aesb-x86-impl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ms_aesb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="c_blake256.h">
@@ -83,10 +86,5 @@
     <ClInclude Include="hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="aesb-x64.S" />
-    <None Include="aesb-arm.S" />
-    <None Include="aesb-x86.S" />
   </ItemGroup>
 </Project>

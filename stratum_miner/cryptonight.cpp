@@ -7,7 +7,8 @@ namespace stratum
 	cryptonight::cryptonight(const binary& blob, uint32_t target, 
 		uint32_t start_nonce) :
 		mining_algorithm(blob, target, start_nonce),
-		ctx_(cryptonight_alloc_ctx(), cryptonight_free_ctx)
+		ctx_(cryptonight_alloc_ctx(), cryptonight_free_ctx),
+		aes_ni_support_(has_aes_ni_support() ? true : false)
 	{
 		if (blob_.size() < 76)
 			throw std::runtime_error("Invalid blob for cryptonight hash");
@@ -20,7 +21,10 @@ namespace stratum
 		uint32_t *nonceptr = (uint32_t*)(&blob_[39]);
 		*nonceptr = nonce_;
 		// calc hash
-		cryptonight_hash_ctx(hash_.data(), &blob_[0], 76, ctx_.get());
+		if (aes_ni_support_)
+			cryptonight_hash_ctx_aes_ni(hash_.data(), &blob_[0], 76, ctx_.get());
+		else
+			cryptonight_hash_ctx(hash_.data(), &blob_[0], 76, ctx_.get());
 		return (hash_[7] < target_);
 	}
 

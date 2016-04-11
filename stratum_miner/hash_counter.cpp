@@ -18,6 +18,8 @@ namespace stratum
 	{
 		unsigned long long val = hashes_.load();
 		unsigned secs = time(nullptr) - start_;
+		if (secs == 0)
+			return 0.0;
 		return double(val) / secs;
 	}
 

@@ -15,6 +15,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "miner_test", "miner_test\mi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hashes", "hashes\hashes.vcxproj", "{E13AB0ED-8942-43B6-A158-2918B45F2A6C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hashes_test", "hashes_test\hashes_test.vcxproj", "{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E13AB0ED-8942-43B6-A158-2918B45F2A6C} = {E13AB0ED-8942-43B6-A158-2918B45F2A6C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -61,6 +66,18 @@ Global
 		{E13AB0ED-8942-43B6-A158-2918B45F2A6C}.Release|Win32.Build.0 = Release|Win32
 		{E13AB0ED-8942-43B6-A158-2918B45F2A6C}.Release|x64.ActiveCfg = Release|x64
 		{E13AB0ED-8942-43B6-A158-2918B45F2A6C}.Release|x64.Build.0 = Release|x64
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Debug|Win32.Build.0 = Debug|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Debug|x64.ActiveCfg = Debug|x64
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Debug|x64.Build.0 = Debug|x64
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Release|Win32.ActiveCfg = Release|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Release|Win32.Build.0 = Release|Win32
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Release|x64.ActiveCfg = Release|x64
+		{2E5CDB4D-A13C-4074-985A-8C62B7A298D3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

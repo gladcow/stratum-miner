@@ -21,6 +21,7 @@ namespace stratum
 		std::array<uint32_t, 8> hash_;
 		std::unique_ptr<struct cryptonight_ctx, 
 			void(*)(struct cryptonight_ctx*)> ctx_;
+		bool aes_ni_support_;
 	};
 }
 

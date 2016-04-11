@@ -6,8 +6,6 @@
 
 // Modified for embedded_miner by Gordon Shumway
 
-//#include "cpuminer-config.h"
-//#include "miner.h"
 #include "oaes_lib.h"
 #include "c_keccak.h"
 #include "c_groestl.h"
@@ -73,10 +71,12 @@ static void do_skein_hash(const void* input, size_t len, char* output) {
 	assert(likely(SKEIN_SUCCESS == r));
 }
 
-extern int fast_aesb_single_round(const uint8_t *in, uint8_t*out, const uint8_t *expandedKey);
-extern int aesb_single_round(const uint8_t *in, uint8_t*out, const uint8_t *expandedKey);
-extern int aesb_pseudo_round_mut(uint8_t *val, uint8_t *expandedKey);
-extern int fast_aesb_pseudo_round_mut(uint8_t *val, uint8_t *expandedKey);
+extern void aesb_single_round(const uint8_t *in, uint8_t*out, const uint8_t *expandedKey);
+extern void aesb_pseudo_round_mut(uint8_t *val, uint8_t *expandedKey);
+#ifdef _MSC_VER
+extern void ms_fast_aesb_single_round(const uint8_t *in, uint8_t*out, const uint8_t *expandedKey);
+extern void ms_fast_aesb_pseudo_round_mut(uint8_t *val, uint8_t *expandedKey);
+#endif
 
 static void (* const extra_hashes[4])(const void *, size_t, char *) = {
 		do_blake_hash, do_groestl_hash, do_jh_hash, do_skein_hash
@@ -195,9 +195,78 @@ void cryptonight_hash_ctx(void* output, const void* input, size_t len, struct cr
 	oaes_free((OAES_CTX **) &ctx->aes_ctx);
 }
 
+void cryptonight_hash_ctx_aes_ni(void* output, const void* input, size_t len, struct cryptonight_ctx* ctx) {
+	hash_process(&ctx->state.hs, (const uint8_t*)input, len);
+	ctx->aes_ctx = (oaes_ctx*)oaes_alloc();
+	size_t i, j;
+	memcpy(ctx->text, ctx->state.init, INIT_SIZE_BYTE);
+
+	oaes_key_import_data(ctx->aes_ctx, ctx->state.hs.b, AES_KEY_SIZE);
+	for (i = 0; likely(i < MEMORY); i += INIT_SIZE_BYTE) {
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 0], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 1], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 2], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 3], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 4], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 5], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 6], ctx->aes_ctx->key->exp_data);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[AES_BLOCK_SIZE * 7], ctx->aes_ctx->key->exp_data);
+		memcpy(&ctx->long_state[i], ctx->text, INIT_SIZE_BYTE);
+	}
+
+	xor_blocks_dst(&ctx->state.k[0], &ctx->state.k[32], ctx->a);
+	xor_blocks_dst(&ctx->state.k[16], &ctx->state.k[48], ctx->b);
+
+	for (i = 0; likely(i < ITER / 4); ++i) {
+		/* Dependency chain: address -> read value ------+
+		* written value <-+ hard function (AES or MUL) <+
+		* next address  <-+
+		*/
+		/* Iteration 1 */
+		j = e2i(ctx->a);
+		ms_fast_aesb_single_round(&ctx->long_state[j], ctx->c, ctx->a);
+		xor_blocks_dst(ctx->c, ctx->b, &ctx->long_state[j]);
+		/* Iteration 2 */
+		mul_sum_xor_dst(ctx->c, ctx->a, &ctx->long_state[e2i(ctx->c)]);
+		/* Iteration 3 */
+		j = e2i(ctx->a);
+		ms_fast_aesb_single_round(&ctx->long_state[j], ctx->b, ctx->a);
+		xor_blocks_dst(ctx->b, ctx->c, &ctx->long_state[j]);
+		/* Iteration 4 */
+		mul_sum_xor_dst(ctx->b, ctx->a, &ctx->long_state[e2i(ctx->b)]);
+	}
+
+	memcpy(ctx->text, ctx->state.init, INIT_SIZE_BYTE);
+	oaes_key_import_data(ctx->aes_ctx, &ctx->state.hs.b[32], AES_KEY_SIZE);
+	for (i = 0; likely(i < MEMORY); i += INIT_SIZE_BYTE) {
+		xor_blocks(&ctx->text[0 * AES_BLOCK_SIZE], &ctx->long_state[i + 0 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[0 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[1 * AES_BLOCK_SIZE], &ctx->long_state[i + 1 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[1 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[2 * AES_BLOCK_SIZE], &ctx->long_state[i + 2 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[2 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[3 * AES_BLOCK_SIZE], &ctx->long_state[i + 3 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[3 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[4 * AES_BLOCK_SIZE], &ctx->long_state[i + 4 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[4 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[5 * AES_BLOCK_SIZE], &ctx->long_state[i + 5 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[5 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[6 * AES_BLOCK_SIZE], &ctx->long_state[i + 6 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[6 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+		xor_blocks(&ctx->text[7 * AES_BLOCK_SIZE], &ctx->long_state[i + 7 * AES_BLOCK_SIZE]);
+		ms_fast_aesb_pseudo_round_mut(&ctx->text[7 * AES_BLOCK_SIZE], ctx->aes_ctx->key->exp_data);
+	}
+	memcpy(ctx->state.init, ctx->text, INIT_SIZE_BYTE);
+	hash_permutation(&ctx->state.hs);
+	/*memcpy(hash, &state, 32);*/
+	extra_hashes[ctx->state.hs.b[0] & 3](&ctx->state, 200, output);
+	oaes_free((OAES_CTX **)&ctx->aes_ctx);
+}
+
+
 void cryptonight_hash(void* output, const void* input, size_t len) {
 	struct cryptonight_ctx *ctx = (struct cryptonight_ctx*)malloc(sizeof(struct cryptonight_ctx));
-	cryptonight_hash_ctx(output, input, len, ctx);
+	cryptonight_hash_ctx_aes_ni(output, input, len, ctx);
 	free(ctx);
 }
 
