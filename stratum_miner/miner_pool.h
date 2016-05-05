@@ -18,6 +18,7 @@ namespace stratum
 		~miner_pool();
 
 		void set_job(const binary& blob, uint32_t target, job_callback cb);
+		void stop_current_job();
 
 		double hash_per_second() const;
 	private:

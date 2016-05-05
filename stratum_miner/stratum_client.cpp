@@ -4,22 +4,22 @@
 #include <iostream>
 #include <future>
 #include <boost/bind.hpp>
+#include <thread>
 
 namespace stratum
 {
 	stratum_client::stratum_client(const std::string& server, const std::string& port,
 		const std::string& login, const std::string& pwd) :
+		pool_(7),
 		working_(io_service_),
 		resolver_(io_service_),
 		socket_(io_service_),
-		login_(login), pwd_(pwd)
+		server_(server), port_(port),
+		login_(login), pwd_(pwd),
+		inited_(false)
 	{
-		boost::asio::ip::tcp::resolver::query query(server, port);
-		resolver_.async_resolve(query,
-			boost::bind(&stratum_client::handle_resolve, this,
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::iterator));
 		std::async(boost::bind(&boost::asio::io_service::run, &io_service_));
+		io_service_.post(boost::bind(&stratum_client::reconnect, this));
 	}
 
 	stratum_client::~stratum_client()
@@ -27,9 +27,25 @@ namespace stratum
 		io_service_.stop();
 	}
 
+	void stratum_client::reconnect()
+	{
+		pool_.stop_current_job();
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		std::cout << "\n****\nStart connect to " << server_ << 
+			":" << port_ << "..." << std::endl;
+		boost::asio::ip::tcp::resolver::query query(server_, port_);
+		inited_ = true;
+		resolver_.async_resolve(query,
+			boost::bind(&stratum_client::handle_resolve, this,
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::iterator));
+	}
+
 	void stratum_client::handle_resolve(const boost::system::error_code& err,
 		boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 	{
+		if (!inited_)
+			return;
 		if (!err)
 		{
 			boost::asio::async_connect(socket_, endpoint_iterator,
@@ -38,15 +54,20 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err.message() << "\n";
+			std::cout << "Error: " << err << ": " << err.message() << "\n";
+			inited_ = false;
+			io_service_.post(boost::bind(&stratum_client::reconnect, this));
 		}
 	}
 
 	void stratum_client::handle_connect(const boost::system::error_code& err)
 	{
+		if (!inited_)
+			return;
 		if (!err)
 		{
 			{
+				std::cout << "Try to login..." << std::endl;
 				std::ostream request_stream(&request_);
 				request_stream << "{\"id\": 1, \"method\": \"login\", "
 					"\"params\": { "
@@ -63,14 +84,16 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err.message() << "\n";
+			std::cout << "Error: " << err << ": " << err.message() << "\n";
+			inited_ = false;
+			io_service_.post(boost::bind(&stratum_client::reconnect, this));
 		}
 	}
 
 	void stratum_client::handle_job_succeeded(const std::string& job_id, 
 		uint32_t nonce, const binary& hash)
 	{
-		std::cout << "job [" << job_id << "] succeeded, " << 
+		std::cout << "job [" << job_id << "] succeeded, " <<
 			nonce << std::endl;
 		{
 			std::ostringstream oss;
@@ -98,7 +121,9 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err << "\n";
+			std::cout << "Error: " << err << ": " << err.message() << "\n";
+			inited_ = false;
+			io_service_.post(boost::bind(&stratum_client::reconnect, this));
 		}
 	}
 
@@ -144,9 +169,10 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err << "\n";
+			std::cout << "Error: " << err << ": " << err.message() << "\n";
+			inited_ = false;
+			io_service_.post(boost::bind(&stratum_client::reconnect, this));
 		}
 	}
-
 
 }

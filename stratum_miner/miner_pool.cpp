@@ -27,7 +27,12 @@ namespace stratum
 		start();
 	}
 
-	void miner_pool::calc(const binary& blob, uint32_t target, 
+	void miner_pool::stop_current_job()
+	{
+		stop();
+	}
+
+	void miner_pool::calc(const binary& blob, uint32_t target,
 		uint32_t start_nonce, job_callback cb,
 		std::atomic_flag& stop, hash_counter& hashes)
 	{
