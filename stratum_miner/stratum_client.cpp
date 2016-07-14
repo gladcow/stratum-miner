@@ -8,15 +8,24 @@
 
 namespace stratum
 {
+
+	void default_error_callback(int error, const std::string& msg,
+		stratum_client* client)
+	{
+		std::cout << "Error: " << error << ": " << msg << "\n";
+		client->async_reconnect();
+	}
+
 	stratum_client::stratum_client(const std::string& server, const std::string& port,
-		const std::string& login, const std::string& pwd) :
+		const std::string& login, const std::string& pwd, error_callback ec) :
 		pool_(7),
 		working_(io_service_),
 		resolver_(io_service_),
 		socket_(io_service_),
 		server_(server), port_(port),
 		login_(login), pwd_(pwd),
-		inited_(false)
+		inited_(false), 
+		ec_(ec)
 	{
 		std::async(boost::bind(&boost::asio::io_service::run, &io_service_));
 		io_service_.post(boost::bind(&stratum_client::reconnect, this));
@@ -27,10 +36,16 @@ namespace stratum
 		io_service_.stop();
 	}
 
+	void stratum_client::async_reconnect()
+	{
+		inited_ = false;
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		io_service_.post(boost::bind(&stratum_client::reconnect, this));
+	}
+
 	void stratum_client::reconnect()
 	{
 		pool_.stop_current_job();
-		std::this_thread::sleep_for(std::chrono::seconds(5));
 		std::cout << "\n****\nStart connect to " << server_ << 
 			":" << port_ << "..." << std::endl;
 		boost::asio::ip::tcp::resolver::query query(server_, port_);
@@ -54,9 +69,7 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err << ": " << err.message() << "\n";
-			inited_ = false;
-			io_service_.post(boost::bind(&stratum_client::reconnect, this));
+			ec_(err.value(), err.message(), this);
 		}
 	}
 
@@ -84,9 +97,7 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err << ": " << err.message() << "\n";
-			inited_ = false;
-			io_service_.post(boost::bind(&stratum_client::reconnect, this));
+			ec_(err.value(), err.message(), this);
 		}
 	}
 
@@ -121,9 +132,7 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err << ": " << err.message() << "\n";
-			inited_ = false;
-			io_service_.post(boost::bind(&stratum_client::reconnect, this));
+			ec_(err.value(), err.message(), this);
 		}
 	}
 
@@ -169,9 +178,7 @@ namespace stratum
 		}
 		else
 		{
-			std::cout << "Error: " << err << ": " << err.message() << "\n";
-			inited_ = false;
-			io_service_.post(boost::bind(&stratum_client::reconnect, this));
+			ec_(err.value(), err.message(), this);
 		}
 	}
 
